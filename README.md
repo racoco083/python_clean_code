@@ -212,6 +212,7 @@ matches = re.match(city_zip_code_regex, address)
 if matches:
     city, zip_code = matches.groups()
     print(f"{city}: {zip_code}")
+# city_zip_code_regex에서 city 추출하는 부분과 zip_code 추출하는 부분 바뀌면 city, zip_code변수 값들이 바뀔 수 있다.
 ```
 
 <br>
