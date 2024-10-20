@@ -382,7 +382,7 @@ def email_clients(clients: List[Client]) -> None:
 
 <br><br>
 
-**좋은 예 1**:
+**좋은 예**:
 
 ```python
 from typing import List
@@ -406,38 +406,6 @@ def email_clients(clients: List[Client]) -> None:
     """Send an email to a given list of clients.
     """
     for client in get_active_clients(clients):
-        email(client)
-```
-
-<br>
-
-위 코드에서 generator를 사용할 수 있는 부분이 보이시나요?
-
-<br><br>
-
-**좋은 예 2:**
-
-```python
-from typing import Generator, Iterator
-
-
-class Client:
-    active: bool
-
-
-def email(client: Client):
-    pass
-
-
-def active_clients(clients: Iterator[Client]) -> Generator[Client, None, None]:
-    """Only active clients"""
-    return (client for client in clients if client.active)
-
-
-def email_client(clients: Iterator[Client]) -> None:
-    """Send an email to a given list of clients.
-    """
-    for client in active_clients(clients):
         email(client)
 ```
 
