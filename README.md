@@ -445,28 +445,6 @@ def create_menu(title, body, button_text, cancellable):
 
 <br>
 
-**java-esque (자바 표현법)**:
-
-```python
-class Menu:
-    def __init__(self, config: dict):
-        self.title = config["title"]
-        self.body = config["body"]
-        # ...
-
-
-menu = Menu(
-    {
-        "title": "My Menu",
-        "body": "Something about my menu",
-        "button_text": "OK",
-        "cancellable": False
-    }
-)
-```
-
-<br>
-
 **좋은 예 1:**
 
 ```python
