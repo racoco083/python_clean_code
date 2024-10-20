@@ -94,6 +94,42 @@ police_officer.work() # The police officer enforces the law.
 
 <br>
 
+인터페이스
+
+```python
+from abc import ABC, abstractmethod
+
+# 인터페이스 정의
+class NotificationService(ABC):
+    @abstractmethod
+    def send(self, recipient: str, message: str) -> None:
+        pass
+
+# 인터페이스를 구현한 클래스 1
+class EmailService(NotificationService):
+    def send(self, recipient: str, message: str) -> None:
+        print(f"Sending email to {recipient}: {message}")
+
+# 인터페이스를 구현한 클래스 2
+class SMSService(NotificationService):
+    def send(self, recipient: str, message: str) -> None:
+        print(f"Sending SMS to {recipient}: {message}")
+
+# 인터페이스를 사용하는 코드
+def notify_user(notification_service: NotificationService, recipient: str, message: str) -> None:
+    notification_service.send(recipient, message)
+
+# 사용 예시
+email_service = EmailService()
+sms_service = SMSService()
+
+notify_user(email_service, "user@example.com", "Welcome to our service!")
+notify_user(sms_service, "123-456-7890", "Your code is 12345")
+
+```
+
+<br>
+
 오버로딩
 
 ```python
