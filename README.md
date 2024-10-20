@@ -233,64 +233,6 @@ time.sleep(SECONDS_IN_A_DAY)
 
 <br><br>
 
-### 변수는 독립적이어야 합니다. 
-(explanatory)
-
-<br>
-
-**나쁜 예:**
-
-```python
-import re
-
-address = "One Infinite Loop, Cupertino 95014"
-city_zip_code_regex = r"^[^,\\]+[,\\\s]+(.+?)\s*(\d{5})?$"
-
-matches = re.match(city_zip_code_regex, address)
-if matches:
-    print(f"{matches[1]}: {matches[2]}")
-```
-
-<br>
-
-**나쁘지는 않은 예:**
-
-나쁘지는 않지만, 여전히 regex의 결과에 의존하고 있습니다.
-
-```python
-import re
-
-address = "One Infinite Loop, Cupertino 95014"
-city_zip_code_regex = r"^[^,\\]+[,\\\s]+(.+?)\s*(\d{5})?$"
-
-matches = re.match(city_zip_code_regex, address)
-if matches:
-    city, zip_code = matches.groups()
-    print(f"{city}: {zip_code}")
-# city_zip_code_regex에서 city 추출하는 부분과 zip_code 추출하는 부분 바뀌면 city, zip_code변수 값들이 바뀔 수 있다.
-```
-
-<br>
-
-**좋은 예:**
-
-하위 패턴의 이름을 지정함으로써 regex 결과에 대한 의존성을 줄일 수 있습니다.
-
-```python
-import re
-
-address = "One Infinite Loop, Cupertino 95014"
-city_zip_code_regex = r"^[^,\\]+[,\\\s]+(?P<city>.+?)\s*(?P<zip_code>\d{5})?$"
-
-matches = re.match(city_zip_code_regex, address)
-if matches:
-    print(f"{matches['city']}, {matches['zip_code']}")
-```
-
-**[⬆ 목차로 이동](#목차)**
-
-<br><br>
-
 ### 읽는 사람으로 하여금 기능을 유추하도록 만드는 이름을 짓지 마세요.
 변수가 의미하는 바가 무엇인지를 코드를 상세히 보지 않아도 알 수 있도록 하세요.
 
