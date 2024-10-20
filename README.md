@@ -1145,8 +1145,28 @@ class TemplateView(View):
 def render(view: View, request) -> Response:
      """Render a View"""
      return view.get(request)
+    
+render(TemplateView(), None)
 
 ```
+
+<br>
+
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-20-e8bfee3ef0dd> in <cell line: 50>()
+     48      return view.get(request)
+     49 
+---> 50 render(TemplateView(), None)
+
+<ipython-input-20-e8bfee3ef0dd> in render(view, request)
+     46 def render(view: View, request) -> Response:
+     47      """Render a View"""
+---> 48      return view.get(request)
+     49 
+     50 render(TemplateView(), None)
+
+TypeError: TemplateView.get() missing 1 required positional argument: 'template_file'
 
 <br>
 
@@ -1158,24 +1178,70 @@ def render(view: View, request) -> Response:
 
 <br>
 
-만약 우리가 `render()`를 `View`와 `View`의 파생 클래스에서 사용할 수 있기를 원한다면,
+**좋은 예:**
 
-우리는 외부 인터페이스가 손상되지 않도록 주의해야 할 필요가 있습니다.
+from dataclasses import dataclass
+from typing import Optional
 
-그런데 주어진 클래스에의 구성을 어떻게 알 수 있을까요?
 
-[mypy](https://mypy.readthedocs.io/en/stable/)와 같은 type 검사 도구를 사용하면  
-이와 비슷한 문제가 발생할 때의 오류를 확인할 수 있습니다.
+@dataclass
+class Response:
+    """An HTTP response"""
+
+    status: int
+    content_type: str
+    body: str
+
+
+class View:
+    """A simple view that returns plain text responses"""
+
+    content_type = "text/plain"
+
+    def render_body(self) -> str:
+        """Render the message body of the response"""
+        return "Welcome to my web site"
+
+    def get(self, request) -> Response:
+        """Handle a GET request and return a message in the response"""
+        return Response(
+            status=200,
+            content_type=self.content_type,
+            body=self.render_body()
+        )
+
+
+class TemplateView(View):
+    """A view that returns HTML responses based on a template file."""
+
+    content_type = "text/html"
+    template_file: Optional[str] = None  # 추가: template_file 속성
+
+    def __init__(self, template_file: str):
+        self.template_file = template_file
+
+    def get(self, request) -> Response:  # 타입 수정
+        """Render the message body as HTML"""
+        if not self.template_file:
+            raise ValueError("Template file must be provided")
+
+        with open(self.template_file) as fd:
+            return Response(
+                status=200,
+                content_type=self.content_type,
+                body=fd.read()
+            )
+
+
+def render(view: View, request) -> Response:
+    """Render a View"""
+    return view.get(request)
+
+render(TemplateView('index.html'), None)
 
 <br>
 
-```
-error: Signature of "get" incompatible with supertype "View"
-<string>:36: note:      Superclass:
-<string>:36: note:          def get(self, request: Any) -> Response
-<string>:36: note:      Subclass:
-<string>:36: note:          def get(self, request: Any, template_file: str) -> Response
-```
+출력 결과 : Response(status=200, content_type='text/html', body='test html')
 
 <br>
 
