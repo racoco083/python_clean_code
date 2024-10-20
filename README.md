@@ -641,28 +641,32 @@ message.send()
 
 <br>
 
+***고수준 추상화는 복잡한 시스템의 전반적인 흐름과 개념을 다루며, 사용자에게 친숙한 인터페이스를 제공합니다.
+저수준 추상화는 세부적인 구현과 알고리즘을 다루며, 성능 최적화와 같은 구체적인 요구사항에 대응합니다.***
+
 **나쁜 예:**
 
 ```python
-# type: ignore
+def process_order(order):
+    # 고수준: 주문 처리
+    print(f"Processing order for {order['customer']}")
 
-def parse_better_js_alternative(code: str) -> None:
-    regexes = [
-        # ...
-    ]
-
-    statements = code.split('\n')
-    tokens = []
-    for regex in regexes:
-        for statement in statements:
-            pass
-
-    ast = []
-    for token in tokens:
-        pass
-
-    for node in ast:
-        pass
+    # 저수준: 세부 작업 - 총액 계산
+    total = 0
+    for item in order['items']:
+        total += item['price'] * item['quantity']
+    
+    # 저수준: 세부 작업 - 세금 계산
+    tax = total * 0.1
+    
+    # 저수준: 세부 작업 - 배송비 추가
+    if total > 50:
+        shipping = 0
+    else:
+        shipping = 5
+    
+    # 고수준: 결과 출력
+    print(f"Total cost for the order is {total + tax + shipping}")
 ```
 
 <br>
@@ -670,37 +674,35 @@ def parse_better_js_alternative(code: str) -> None:
 **좋은 예:**
 
 ```python
-from typing import Tuple, List, Dict
+def process_order(order):
+    # 고수준: 주문 처리
+    print(f"Processing order for {order['customer']}")
+    
+    # 고수준: 계산된 총액을 사용해 처리
+    total_cost = calculate_total_cost(order)
+    
+    # 고수준: 결과 출력
+    print(f"Total cost for the order is {total_cost}")
 
-REGEXES: Tuple = (
-    # ...
-)
+def calculate_total_cost(order):
+    # 저수준: 세부 작업 분리
+    total = calculate_items_total(order)
+    tax = calculate_tax(total)
+    shipping = calculate_shipping(total)
+    
+    return total + tax + shipping
 
+def calculate_items_total(order):
+    total = 0
+    for item in order['items']:
+        total += item['price'] * item['quantity']
+    return total
 
-def parse_better_js_alternative(code: str) -> None:
-    tokens: List = tokenize(code)
-    syntax_tree: List = parse(tokens)
+def calculate_tax(total):
+    return total * 0.1
 
-    for node in syntax_tree:
-        pass
-
-
-def tokenize(code: str) -> List:
-    statements = code.split()
-    tokens: List[Dict] = []
-    for regex in REGEXES:
-        for statement in statements:
-            pass
-
-    return tokens
-
-
-def parse(tokens: List) -> List:
-    syntax_tree: List[Dict] = []
-    for token in tokens:
-        pass
-
-    return syntax_tree
+def calculate_shipping(total):
+    return 0 if total > 50 else 5
 ```
 
 **[⬆ 목차로 이동](#목차)**
