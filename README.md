@@ -50,6 +50,25 @@ Code*](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132
 
 [clean-code-javascript](https://github.com/ryanmcdermott/clean-code-javascript)의 문서를 `Python 3.7+` 버전에 맞게 수정하였습니다.
 
+<br>
+
+상속, 오버라이딩
+
+![image](https://github.com/user-attachments/assets/5690b685-0443-4588-a8f5-5c2cbb1a6014)
+
+<br>
+
+오버로딩
+
+'''python
+int add(int a, int b) {
+    return a + b;
+}
+
+double add(double a, double b) {
+    return a + b;
+}
+'''
 
 <br><br>
 
