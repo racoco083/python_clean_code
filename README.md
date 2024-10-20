@@ -58,6 +58,40 @@ Code*](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132
 
 ![image](https://github.com/user-attachments/assets/5690b685-0443-4588-a8f5-5c2cbb1a6014)
 
+```python
+from abc import ABC, abstractmethod
+
+# 추상 클래스 Person
+class Person(ABC):
+    @abstractmethod
+    def work(self):
+        pass
+
+# Firefighter 클래스, Person 클래스의 work 메서드를 오버라이딩
+class Firefighter(Person):
+    def work(self):
+        print("The firefighter extinguishes fires.")
+
+# Programmer 클래스, Person 클래스의 work 메서드를 오버라이딩
+class Programmer(Person):
+    def work(self):
+        print("The programmer writes code.")
+
+# PoliceOfficer 클래스, Person 클래스의 work 메서드를 오버라이딩
+class PoliceOfficer(Person):
+    def work(self):
+        print("The police officer enforces the law.")
+
+# 객체 생성 및 메서드 호출
+firefighter = Firefighter()
+programmer = Programmer()
+police_officer = PoliceOfficer()
+
+firefighter.work()    # The firefighter extinguishes fires.
+programmer.work()     # The programmer writes code.
+police_officer.work() # The police officer enforces the law.
+```
+
 <br>
 
 오버로딩
