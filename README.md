@@ -1460,110 +1460,104 @@ def view(request):
 
 > "구체적인 세부 사항(details)보다는 추상(abstractions)에 의존하는 건 어때?", Uncle Bob.
 
+> DIP의 핵심 아이디어
+
+고수준 모듈은 저수준 모듈의 세부 구현에 의존하지 않고, 추상화된 인터페이스에 의존해야 합니다.
+
+저수준 모듈 역시 직접적으로 고수준 모듈에 의존하지 않고, 추상화된 인터페이스를 통해 상호작용해야 합니다.
+
+의존성의 방향은 구체적인 구현이 아닌, 추상화된 계층으로 향하게 만들어야 합니다.
+
 <br>
 
-CSV 파일의 행을 즉시 스트리밍하는 HTTP Response를 반환하는 web view를 작성하고 싶다고 생각해보세요.
+아래 코드는 DIP를 위반한 예입니다. OrderService (고수준 모듈)가 EmailService (저수준 모듈)의 구체적인 구현에 직접 의존하고 있습니다.
 
-우리는 파이썬 표준 라이브러리에서 제공하는 CSV writer를 사용하고자 합니다.
+고수준 모듈은 일반적으로 다양한 저수준 모듈을 사용하여 목적을 달성합니다.
+
+저수준 모듈은 시스템의 구체적인 세부 사항이나 기술적 구현을 담당합니다.
 
 <br>
 
 **Bad**
 
 ```python
-import csv
-from io import StringIO
+class EmailService:
+    def send_email(self, recipient: str, message: str) -> None:
+        print(f"Sending email to {recipient}: {message}")
 
+class OrderService:
+    def __init__(self, email_service: EmailService):
+        self.email_service = email_service
 
-class StreamingHttpResponse:
-     """A streaming HTTP response"""
-     ...  # implementation code goes here
-
-
-def some_view(request):
-     rows = (
-          ['First row', 'Foo', 'Bar', 'Baz'],
-          ['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"]
-     )
-
-     # Define a generator to stream data directly to the client
-     def stream():
-          buffer_ = StringIO()
-          writer = csv.writer(buffer_, delimiter=';', quotechar='"')
-          for row in rows:
-               writer.writerow(row)
-               buffer_.seek(0)
-               data = buffer_.read()
-               buffer_.seek(0)
-               buffer_.truncate()
-               yield data
-
-     # Create the streaming response  object with the appropriate CSV header.
-     response = StreamingHttpResponse(stream(), content_type='text/csv')
-     response[
-          'Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-
-     return response
-
+    def place_order(self, order: str, recipient: str) -> None:
+        print(f"Placing order: {order}")
+        self.email_service.send_email(recipient, "Your order has been placed.")
 ```
 
 <br>
 
-첫 구현은 CSV writer 인터페이스를 사용했습니다. 
+OrderService가 EmailService의 구체적인 구현에 의존하고 있습니다. 
 
-일부 하위 작업은 파일처럼 String I/O 객체를 조작하여 writer에 데이터를 썼습니다.
+만약 이메일 이외의 방식(예: SMS, 푸시 알림 등)으로 알림을 보내고 싶다면 OrderService의 코드를 수정해야 합니다. 
 
-이 방법은 번잡하고 우아하지 않습니다.
+이로 인해 유연성과 확장성이 떨어집니다.
 
 <br>
 
-더 좋은 방법은 writer가 `.write()` 메소드를 포함하는 객체만 필요로 한다는 것을 이해하는 것입니다.
-
-`StreamingHttpResponse` 클래스가 즉시 클라이언트로 다시 스트리밍할 수 있도록 새로운 행 데이터를 즉시 반환하는 dummy 객체를 전달하는 것은 어떤가요?
+DIP를 준수하려면, OrderService와 EmailService 사이에 추상화 계층을 두어 
+OrderService가 구체적인 EmailService 구현에 의존하지 않도록 해야 합니다.
 
 <br>
 
 **Good**
 
 ```python
-import csv
+from abc import ABC, abstractmethod
 
+# 추상화된 인터페이스 정의
+class NotificationService(ABC):
+    @abstractmethod
+    def send(self, recipient: str, message: str) -> None:
+        pass
 
-class Echo:
-     """An object that implements just the write method of the file-like
-     interface.
-     """
+# 저수준 모듈: EmailService는 NotificationService 인터페이스를 구현
+class EmailService(NotificationService):
+    def send(self, recipient: str, message: str) -> None:
+        print(f"Sending email to {recipient}: {message}")
 
-     def write(self, value):
-          """Write the value by returning it, instead of storing in a buffer."""
-          return value
+# 저수준 모듈: SMSService도 NotificationService 인터페이스를 구현
+class SMSService(NotificationService):
+    def send(self, recipient: str, message: str) -> None:
+        print(f"Sending SMS to {recipient}: {message}")
 
+# 고수준 모듈: OrderService는 NotificationService 인터페이스에 의존
+class OrderService:
+    def __init__(self, notification_service: NotificationService):
+        self.notification_service = notification_service
 
-def some_streaming_csv_view(request):
-     """A view that streams a large CSV file."""
-     rows = (
-          ['First row', 'Foo', 'Bar', 'Baz'],
-          ['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"]
-     )
-     writer = csv.writer(Echo(), delimiter=';', quotechar='"')
-     return StreamingHttpResponse(
-          (writer.writerow(row) for row in rows),
-          content_type="text/csv",
-          headers={
-               'Content-Disposition': 'attachment; filename="somefilename.csv"'},
-     )
+    def place_order(self, order: str, recipient: str) -> None:
+        print(f"Placing order: {order}")
+        self.notification_service.send(recipient, "Your order has been placed.")
+
+# 사용 예
+email_service = EmailService()
+order_service = OrderService(email_service)
+order_service.place_order("Laptop", "customer@example.com")
+
+# SMS 서비스로 변경
+sms_service = SMSService()
+order_service_sms = OrderService(sms_service)
+order_service_sms.place_order("Phone", "123-456-7890")
 
 ```
 
 <br>
 
-위와 같이 구현하면 이전의 것보다 훨씬 낫고 우아해집니다. 
+**추상화된 인터페이스 NotificationService**를 도입하여, 고수준 모듈인 OrderService가 구체적인 EmailService나 SMSService에 의존하지 않도록 했습니다.
 
-더 적은 코드로 동일한 기능을 구현했다는 것은 장점이 분명합니다.
+OrderService는 이제 추상화된 인터페이스(NotificationService)에 의존하므로, 알림 방식(이메일, SMS, 푸시 알림 등)을 변경하려면 단지 인터페이스를 구현한 다른 클래스(SMSService 등)를 주입하기만 하면 됩니다.
 
-우리는 writer 클래스에서 `.write()`라는 추상적인 방법에만 관심이 있고 내부 세부 사항에는 관심이 없다는 것을 활용했습니다.
-
-이 예제는 [a submission made to the Django document](https://code.djangoproject.com/ticket/21179)에서 가지고 온 것입니다.
+이로 인해 유연성이 높아지고, 새로운 알림 방식이 추가되더라도 고수준 모듈인 OrderService는 수정할 필요가 없습니다.
 
 <br>
 
