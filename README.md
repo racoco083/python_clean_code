@@ -1018,7 +1018,7 @@ class TemplateView(View):
 
 <br>
 
-**좋은 예 1:**
+**좋은 예:**
 
 ```python
 from dataclasses import dataclass
@@ -1180,6 +1180,7 @@ TypeError: TemplateView.get() missing 1 required positional argument: 'template_
 
 **좋은 예:**
 
+```python
 from dataclasses import dataclass
 from typing import Optional
 
@@ -1238,6 +1239,7 @@ def render(view: View, request) -> Response:
     return view.get(request)
 
 render(TemplateView('index.html'), None)
+```
 
 <br>
 
