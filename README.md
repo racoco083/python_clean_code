@@ -17,14 +17,16 @@
 1. [소개](#소개)
 2. [변수](#변수)
 3. [함수](#함수)
-4. [클래스 (객체지향 5원칙)](#클래스)
+4. [주석](#주석)
+5. [형식맞추기](#형식맞추기)
+6. [클래스 (객체지향 5원칙)](#클래스)
     1. [S: 단일 책임 원칙 (Single Responsibility Principle; SRP)](#단일-책임-원칙-single-responsibility-principle-srp)
     2. [O: 개방/폐쇄 원칙 (Open/Closed Principle; OCP)](#개방폐쇄-원칙-openclosed-principle-ocp)
     3. [L: 리스코프 치환 원칙 (Liskov Substitution Principle; LSP)](#리스코프-치환-원칙-liskov-substitution-principle-lsp)
     4. [I: 인터페이스 분리 원칙 (Interface Segregation Principle; ISP)](#인터페이스-분리-원칙-interface-segregation-principle-isp)
     5. [D: 의존성 역전 원칙 (Dependency Inversion Principle; DIP)](#의존성-역전-원칙-dependency-inversion-principle-dip)
-5. [반복은 지양합시다. (Don't repeat yourself; DRY)](#반복은-지양합시다-dont-repeat-yourself-dry)
-6. [Translations](#translations)
+7. [반복은 지양합시다. (Don't repeat yourself; DRY)](#반복은-지양합시다-dont-repeat-yourself-dry)
+8. [Translations](#translations)
 
 <br><br>
 
