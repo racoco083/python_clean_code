@@ -388,9 +388,7 @@ def create_micro_brewery(name: str = "Hipster Brew Co."):
 
 <br>
 
-함수를 하나의 작업으로 분리한다면, 리펙토링(refactoring)이 쉬워지고 코드를 훨씬 깨끗하게 만들 수 있습니다.
-
-만약 이 rule를 숙지하고 실천한다면, 여러분은 많은 개발자들을 앞서게 될 것입니다.
+추가로 함수의 길이는 20줄 안으로 쓰는 것이 좋습니다. 아무리 길어져도 50줄 안으로..
 
 <br><br>
 
@@ -443,6 +441,60 @@ def email_clients(clients: List[Client]) -> None:
     """
     for client in get_active_clients(clients):
         email(client)
+```
+
+**[⬆ 목차로 이동](#목차)**
+
+<br><br>
+
+### 함수의 들여쓰기
+
+다중 들여쓰기는 코드 가독성을 저해합니다. 보통 maximum 2단 들여쓰기까지 사용하는 것이 좋습니다.
+
+<br><br>
+
+**나쁜 예:**
+
+```python
+def process_data(data):
+    for item in data:
+        if item > 10:
+            if item % 2 == 0:
+                if item < 50:
+                    print("Item is even, greater than 10, and less than 50")
+                else:
+                    print("Item is even, greater than 10, but 50 or more")
+            else:
+                print("Item is odd and greater than 10")
+        else:
+            print("Item is 10 or less")
+
+```
+
+<br><br>
+
+**좋은 예**:
+
+```python
+def describe_large_item(item):
+    """아이템이 10보다 크면 설명하는 함수"""
+    if item % 2 != 0:
+        print("Item is odd and greater than 10")
+        return
+
+    if item < 50:
+        print("Item is even, greater than 10, and less than 50")
+    else:
+        print("Item is even, greater than 10, but 50 or more")
+
+def process_data(data):
+    """데이터 목록을 처리하고 아이템을 설명하는 함수"""
+    for item in data:
+        if item <= 10:
+            print("Item is 10 or less")
+            continue
+
+        describe_large_item(item)
 ```
 
 **[⬆ 목차로 이동](#목차)**
@@ -554,45 +606,7 @@ create_menu(
 
 <br>
 
-**좋은 예 3:**
-
-```python
-from dataclasses import astuple, dataclass
-
-
-@dataclass
-class MenuConfig:
-    """A configuration for the Menu.
-
-    Attributes:
-        title: The title of the Menu.
-        body: The body of the Menu.
-        button_text: The text for the button label.
-        cancellable: Can it be cancelled?
-    """
-    title: str
-    body: str
-    button_text: str
-    cancellable: bool = False
-
-
-def create_menu(config: MenuConfig):
-    title, body, button_text, cancellable = astuple(config)
-    # ...
-
-
-create_menu(
-    MenuConfig(
-        title="My delicious menu",
-        body="A description of the various items on the menu",
-        button_text="Order now!"
-    )
-)
-```
-
-<br>
-
-**좋은 예 4 (Python3.8+ only)**
+**좋은 예 3 (Python3.8+ only)**
 
 ```python
 from typing import TypedDict
@@ -880,6 +894,104 @@ class Person:
 person = Person("Ryan McDermott")
 print(person.name)  # => "Ryan McDermott"
 print(person.name_as_first_and_last)  # => ["Ryan", "McDermott"]
+```
+
+**[⬆ 목차로 이동](#목차)**
+
+<br><br>
+
+## **주석**
+
+### todo와 같은 주석들이 있지만 되도록 쓰지 않고 코드를 보고 이해할 수 있도록 하는 것이 좋습니다.
+
+코드는 변경되지만 주석은 변경되지 않으면서 주석이 코드를 따라가지 못 하는 경우도 있고, 
+
+주석이 쌓이다보면 코드 가독성이 저해됩니다.
+
+<br>
+
+**나쁜 예:**
+
+```python
+//직원에게 복지 혜택을 받을 자격이 있는지 검사한다.
+if(employee.flags & HOURLY_FLAG) && (employee.age > 65)
+```
+
+<br>
+
+**좋은 예:**
+```python
+if(employee.isEligibleForFullBenefit())
+```
+
+**[⬆ 목차로 이동](#목차)**
+
+<br><br>
+
+## **형식 맞추기**
+
+### 코드 가독성을 위해 한 파일 당 200줄 안으로 작성, 길어져도 500줄 안으로 작성할 수 있도록 하는 것이 좋습니다.
+
+비슷한 개념은 행끼리 묶고 아닌 것은 빈 공간으로 구분하는 것이 좋습니다.
+
+한 라인은 스크린 화면에 스크롤 없이 한 번에 볼 수 있도록 하는 것이 좋으며, 
+
+아무리 길어져도 80~120자 안으로 작성하는 것이 좋습니다.
+
+<br>
+
+**나쁜 예:**
+
+```python
+def process_order(order):
+    total_price = 0
+    discount = 0
+    items = order['items']   # 물품 목록
+    customer = order['customer']  # 고객 정보
+    for item in items:total_price += item['price']*item['quantity'] #총 가격 계산
+    if customer['loyalty_level'] > 3:discount = 0.1 * total_price  #VIP 고객 할인
+    final_price = total_price - discount  #할인 적용
+    print("Total price:", total_price)
+    print("Discount:", discount)
+    print("Final price:", final_price)
+    return final_price
+def send_confirmation_email(customer, final_price): print(f"Email sent to {customer['email']} with total price: {final_price}")
+
+```
+
+<br>
+
+**좋은 예:**
+```python
+def process_order(order):
+    # 주문 정보에서 물품 목록과 고객 정보 추출
+    items = order['items']   
+    customer = order['customer']  
+    
+    # 총 가격 계산
+    total_price = 0
+    for item in items:
+        total_price += item['price'] * item['quantity']
+    
+    # VIP 고객일 경우 할인 적용
+    discount = 0
+    if customer['loyalty_level'] > 3:
+        discount = 0.1 * total_price  # 10% 할인
+
+    # 최종 가격 계산
+    final_price = total_price - discount  
+    
+    # 결과 출력
+    print("Total price:", total_price)
+    print("Discount:", discount)
+    print("Final price:", final_price)
+
+    return final_price
+
+def send_confirmation_email(customer, final_price):
+    """이메일 확인 메시지 발송"""
+    print(f"Email sent to {customer['email']} with total price: {final_price}")
+
 ```
 
 **[⬆ 목차로 이동](#목차)**
