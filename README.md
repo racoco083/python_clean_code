@@ -56,7 +56,7 @@ Code*](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132
 
 ## **기초 개념**
 
-상속, 오버라이딩
+상속, 인터페이스, 오버라이딩
 
 ![image](https://github.com/user-attachments/assets/5690b685-0443-4588-a8f5-5c2cbb1a6014)
 
@@ -92,42 +92,6 @@ police_officer = PoliceOfficer()
 firefighter.work()    # The firefighter extinguishes fires.
 programmer.work()     # The programmer writes code.
 police_officer.work() # The police officer enforces the law.
-```
-
-<br>
-
-인터페이스
-
-```python
-from abc import ABC, abstractmethod
-
-# 인터페이스 정의
-class NotificationService(ABC):
-    @abstractmethod
-    def send(self, recipient: str, message: str) -> None:
-        pass
-
-# 인터페이스를 구현한 클래스 1
-class EmailService(NotificationService):
-    def send(self, recipient: str, message: str) -> None:
-        print(f"Sending email to {recipient}: {message}")
-
-# 인터페이스를 구현한 클래스 2
-class SMSService(NotificationService):
-    def send(self, recipient: str, message: str) -> None:
-        print(f"Sending SMS to {recipient}: {message}")
-
-# 인터페이스를 사용하는 코드
-def notify_user(notification_service: NotificationService, recipient: str, message: str) -> None:
-    notification_service.send(recipient, message)
-
-# 사용 예시
-email_service = EmailService()
-sms_service = SMSService()
-
-notify_user(email_service, "user@example.com", "Welcome to our service!")
-notify_user(sms_service, "123-456-7890", "Your code is 12345")
-
 ```
 
 <br>
